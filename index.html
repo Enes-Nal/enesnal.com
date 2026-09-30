@@ -85,7 +85,7 @@
             <span class="word c-green">automations</span>
           </span>
         </h1>
-        <p class="lede rise" style="--d:2">CS student at Arizona State and software engineer intern lead at Malisa Mobility. I like shipping small, useful products fast.</p>
+        <p class="lede rise" style="--d:2">CS student at Arizona State and software engineer intern lead at <a class="co" href="https://www.wellnovamobility.com/" target="_blank" rel="noopener">WellNova Mobility</a>. I like shipping small, useful products fast.</p>
         <div class="cta rise" style="--d:3">
           <a class="btn btn-dark" href="/resume.pdf" target="_blank" rel="noopener">View resume <svg class="ic"><use href="#i-arrow"/></svg></a>
           <button class="btn btn-light" type="button" data-copy="menesnalbant@gmail.com">
@@ -97,8 +97,8 @@
       <aside class="card now rise" style="--d:2">
         <p class="card-kicker"><span class="dot"></span> Right now</p>
         <ul class="now-list">
-          <li><span class="tile t-ember"><svg class="ic"><use href="#i-zap"/></svg></span><div><b>Intern Lead</b><small>Malisa Mobility</small></div></li>
-          <li><span class="tile t-violet"><svg class="ic"><use href="#i-cap"/></svg></span><div><b>CS @ ASU</b><small>Class of Dec 2027</small></div></li>
+          <li><span class="tile logo"><img src="/logos/wellnova.png" alt="" width="26" height="26"></span><div><b>Intern Lead</b><small><a class="co" href="https://www.wellnovamobility.com/" target="_blank" rel="noopener">WellNova Mobility</a></small></div></li>
+          <li><span class="tile logo"><img src="/logos/asu.svg" alt="" width="30" height="18"></span><div><b>CS @ ASU</b><small>Class of Dec 2027</small></div></li>
           <li><span class="tile t-blue"><svg class="ic"><use href="#i-pin"/></svg></span><div><b>Gilbert, AZ</b><small>Arizona, USA</small></div></li>
         </ul>
       </aside>
@@ -120,8 +120,8 @@
       <div class="card list">
         <details class="role" open>
           <summary>
-            <span class="tile t-ember"><svg class="ic"><use href="#i-zap"/></svg></span>
-            <span class="role-main"><b>Software Engineer Intern Lead</b><small>Malisa Mobility · Irvine, CA &amp; Gilbert, AZ</small></span>
+            <span class="tile logo"><img src="/logos/wellnova.png" alt="" width="26" height="26"></span>
+            <span class="role-main"><b>Software Engineer Intern Lead</b><small>WellNova Mobility · Irvine, CA &amp; Gilbert, AZ</small></span>
             <span class="date">Aug 2024 — Now</span>
             <svg class="ic chev"><use href="#i-chev"/></svg>
           </summary>
@@ -259,7 +259,7 @@
         </div>
 
         <div class="card edu">
-          <span class="tile t-violet"><svg class="ic"><use href="#i-cap"/></svg></span>
+          <span class="tile logo"><img src="/logos/asu.svg" alt="" width="30" height="18"></span>
           <b>Arizona State University</b>
           <small>B.S. Computer Science · Software Engineering</small>
           <div class="edu-meta"><span class="badge badge-ember">GPA 4.0</span><span class="badge">Dec 2027</span></div>
@@ -269,7 +269,7 @@
           <li><span class="tile t-yellow"><svg class="ic"><use href="#i-award"/></svg></span><div><b>Congressional Award Gold Medal</b><small>~300 of 46,000 participants</small></div></li>
           <li><span class="tile t-blue"><svg class="ic"><use href="#i-sparkles"/></svg></span><div><b><a href="https://courses.cognitiveclass.ai/certificates/977bfa9b836d493f8ce954194eec64d2" target="_blank" rel="noopener">Data Analysis with Python ↗</a></b><small>IBM certificate</small></div></li>
           <li><span class="tile t-green"><svg class="ic"><use href="#i-users"/></svg></span><div><b>Group Manager, Sema Foundation</b><small>Youth council · 2021 — 2024</small></div></li>
-          <li><span class="tile t-magenta"><svg class="ic"><use href="#i-globe"/></svg></span><div><b>English · Turkish · Azerbaijani</b><small>Fluent · fluent · conversational</small></div></li>
+          <li><span class="tile t-magenta"><svg class="ic"><use href="#i-globe"/></svg></span><div><b>English · Turkish</b><small>Fluent in both</small></div></li>
         </ul>
       </div>
     </section>
@@ -315,7 +315,7 @@
     document.querySelectorAll('details.role').forEach(d => {
       const body = d.querySelector('.role-body');
       d.querySelector('summary').addEventListener('click', e => {
-        if (reduce) return;
+        if (reduce || e.target.closest('a')) return;
         e.preventDefault();
         if (d.dataset.busy) return;
         const opening = !d.open;
@@ -351,13 +351,21 @@
     const track = document.querySelector('.track');
     track.insertAdjacentHTML('beforeend', track.innerHTML.replaceAll('<span class="chip"', '<span aria-hidden="true" class="chip"'));
 
-    // Scroll reveal + count-up
+    // Scroll reveal + count-up. An invisible copy of the final value reserves
+    // the width, so the changing digits never reflow the text around them.
     const countUp = el => {
-      const end = +el.dataset.count, dec = +(el.dataset.dec || 0), t0 = performance.now(), dur = 1100;
+      const end = +el.dataset.count, dec = +(el.dataset.dec || 0), final = el.textContent;
+      el.classList.add('counting');
+      el.innerHTML = `<span class="count-size" aria-hidden="true">${final}</span><span class="count-val">${(0).toFixed(dec)}</span>`;
+      const val = el.lastChild;
+      let t0, last;
       const tick = t => {
-        const p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
-        el.textContent = (end * e).toFixed(dec);
+        t0 ??= t;
+        const p = Math.min((t - t0) / 1400, 1), e = 1 - Math.pow(1 - p, 4);
+        const txt = (end * e).toFixed(dec);
+        if (txt !== last) val.textContent = last = txt;
         if (p < 1) requestAnimationFrame(tick);
+        else { el.textContent = final; el.classList.remove('counting'); }
       };
       requestAnimationFrame(tick);
     };
